@@ -2,6 +2,11 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
     server: {
-        historyApiFallback: true,
+        proxy: {
+            '^/.*': {
+                target: '/',
+                rewrite: () => '/index.html',
+            },
+        },
     },
 });
