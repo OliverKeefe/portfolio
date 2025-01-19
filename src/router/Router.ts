@@ -43,7 +43,7 @@ export class Router {
         }
     }
 
-    private getCurrentPath(): string {
+    protected getCurrentPath(): string {
         return window.location.hash.slice(1) || "/"
     }
 }
