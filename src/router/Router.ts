@@ -1,4 +1,4 @@
-class Router {
+export class Router {
     private routes: Map<string, () => void> = new Map();
     private defaultRoute: (() => void) | null = null;
 
@@ -7,7 +7,8 @@ class Router {
     }
 
     private initialize(): void {
-        window.addEventListener("popstate", () => this.handleRoute());
+        window.addEventListener("hashchange", () => this.handleRoute());
+        this.handleRoute();
     }
 
     public addRoute(path: string, handler: () => void): void {
@@ -15,8 +16,7 @@ class Router {
     }
 
     public navigate(path: string): void {
-        history.pushState({}, "", path);
-        this.handleRoute();
+        window.location.hash = `#${path}`;
     }
 
     private handleRoute(): void {
@@ -25,9 +25,11 @@ class Router {
 
         if (handler) {
             handler();
+        } else if (this.defaultRoute) {
+            this.defaultRoute();
         } else {
-            console.error("No handler found for: `$(currentPath)`");
             this.renderNotFound();
+            console.error(`No handler function found for: ${currentPath}`);
         }
     }
 
@@ -35,14 +37,13 @@ class Router {
         const app = document.getElementById("app");
 
         if (app) {
-            app.innerHTML = "<h1>404 - Page Not Found</h1>"
+            app.innerHTML = "<h1>404 - Page Not Found</h1>";
         } else {
             console.error("404 - Page Not Found");
         }
     }
 
     private getCurrentPath(): string {
-        return window.location.pathname;
+        return window.location.hash.slice(1) || "/"
     }
-
 }
